@@ -3,7 +3,6 @@
 # =====================================================
 # CRITICAL: NEVER COMMIT THESE FILES
 # =====================================================
-
 # Environment Variables (SENSITIVE!)
 .env
 .env.local
@@ -15,8 +14,8 @@
 
 # Composer
 vendor/
-composer.lock
 composer.phar
+# NOTE: composer.lock should be committed for production deployments
 
 # Logs
 *.log
