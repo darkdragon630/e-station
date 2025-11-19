@@ -1,0 +1,51 @@
+# Create/Update .gitignore
+@'
+# =====================================================
+# CRITICAL: NEVER COMMIT THESE FILES
+# =====================================================
+
+# Environment Variables (SENSITIVE!)
+.env
+.env.local
+.env.production
+.env.development
+.env.*.local
+.env.backup
+*.env
+
+# Composer
+vendor/
+composer.lock
+composer.phar
+
+# Logs
+*.log
+error_log.txt
+
+# Cache & Temp
+tmp/
+temp/
+cache/
+*.cache
+
+# OS Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+
+# Node
+node_modules/
+package-lock.json
+
+# Backups
+*.sql
+*.backup
+*.bak
+backup/
+vendor_backup/
+'@ | Out-File -FilePath .gitignore -Encoding utf8
