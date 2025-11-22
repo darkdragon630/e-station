@@ -6,14 +6,14 @@ require_once "../pesan/alerts.php";
 // ==================== AUTHENTICATION ====================
 function checkAdminAuth() {
     if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
-        redirect_with_alert('../auth/login.php', 'error', 'unauthorized');
+        set_flash_message('../auth/login.php', 'error', 'unauthorized');
     }
 }
 
 // ==================== MAINTENANCE FUNCTIONS ====================
 function getMaintenanceStatus($koneksi) {
     try {
-        $stmt = $koneksi->query("SELECT * FROM jadwal_maintenance ORDER BY id_maintenance DESC LIMIT 1");
+        $stmt = $koneksi->prepare("SELECT * FROM jadwal_maintenance ORDER BY id_maintenance DESC LIMIT 1");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($result) {
@@ -151,9 +151,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ];
                 
                 if (createMaintenance($koneksi, $data)) {
-                    flash_success("Jadwal maintenance berhasil ditambahkan!");
+                    alert_success("Jadwal maintenance berhasil ditambahkan!");
                 } else {
-                    flash_error("Gagal menambahkan jadwal maintenance");
+                    alert_error("Gagal menambahkan jadwal maintenance");
                 }
                 
                 header("Location: maintenance.php");
@@ -165,9 +165,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $new_status = $_POST['new_status'] ?? '';
                 
                 if (updateMaintenanceStatus($koneksi, $id_maintenance, $new_status)) {
-                    flash_success("Status maintenance berhasil diperbarui!");
+                    alert_success("Status maintenance berhasil diperbarui!");
                 } else {
-                    flash_error("Gagal memperbarui status maintenance");
+                    set_error_handler("Gagal memperbarui status maintenance");
                 }
                 
                 header("Location: maintenance.php");

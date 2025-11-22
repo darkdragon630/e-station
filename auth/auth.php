@@ -25,7 +25,7 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/auth.css">
     <link rel="stylesheet" href="../css/alert.css">
-    <link rel="icon" type="image/png" href="../images/Logo_1.jpeg">
+    <link rel="icon" type="image/png" href="../images/Logo_1.png">
 </head>
 <body>
 
@@ -35,7 +35,7 @@ if (isset($_SESSION['user_id'])) {
     <div class="page-header">
         <h1>E-STATION</h1>
         <p class="subtitle">Layanan Pengisian Kendaraan Listrik</p>
-        <img src="../images/ev-station.jpg" alt="EV Station">
+        <img src="../images/ev-station.png" alt="EV Station">
     </div>
 
     <div class="card">

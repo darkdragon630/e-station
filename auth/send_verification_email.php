@@ -2,7 +2,7 @@
 /**
  * ===================================
  * Send Verification Email
- * FIXED: Compatible dengan Localhost & Wasmer
+ * FIXED: Wasmer Environment Variables
  * ===================================
  */
 
@@ -16,7 +16,7 @@ use Dotenv\Dotenv;
 // LOAD ENVIRONMENT VARIABLES
 // ========================================
 // Di localhost: Load dari .env file
-// Di Wasmer: Environment variables sudah di-set via secrets
+// Di Wasmer: Environment variables diakses via getenv()
 // ========================================
 
 $env_file = __DIR__ . '/../.env';
@@ -30,9 +30,30 @@ if (file_exists($env_file)) {
     } catch (Exception $e) {
         error_log("⚠️ Failed to load .env: " . $e->getMessage());
     }
-} else {
-    // Wasmer/Production - Environment variables sudah tersedia
-    error_log("ℹ️ .env file not found, using system environment variables");
+}
+
+// ========================================
+// HELPER FUNCTION: Get Environment Variable
+// Compatible dengan localhost (.env) dan Wasmer (secrets)
+// ========================================
+function getEnvVar($key) {
+    // Try $_ENV first (dari .env)
+    if (isset($_ENV[$key]) && !empty($_ENV[$key])) {
+        return $_ENV[$key];
+    }
+    
+    // Try getenv() (dari system/Wasmer secrets)
+    $value = getenv($key);
+    if ($value !== false && !empty($value)) {
+        return $value;
+    }
+    
+    // Try $_SERVER
+    if (isset($_SERVER[$key]) && !empty($_SERVER[$key])) {
+        return $_SERVER[$key];
+    }
+    
+    return null;
 }
 
 // Validate required environment variables
@@ -45,17 +66,36 @@ $required_vars = [
     'APP_URL'
 ];
 
+$missing_vars = [];
 foreach ($required_vars as $var) {
-    if (!isset($_ENV[$var]) || empty($_ENV[$var])) {
+    $value = getEnvVar($var);
+    if ($value === null) {
         error_log("❌ CRITICAL: Missing environment variable: {$var}");
-        // Jangan throw exception, return false di function saja
+        $missing_vars[] = $var;
+    } else {
+        error_log("✅ Found: {$var} = " . substr($value, 0, 10) . "...");
     }
 }
 
+if (!empty($missing_vars)) {
+    error_log("❌ Missing variables: " . implode(', ', $missing_vars));
+}
+
 function sendVerificationEmail($email, $nama, $verification_token, $role) {
+    // Get environment variables using helper function
+    $smtp_host = getEnvVar('BREVO_SMTP_HOST');
+    $smtp_user = getEnvVar('BREVO_SMTP_USER');
+    $smtp_pass = getEnvVar('BREVO_SMTP_PASS');
+    $from_email = getEnvVar('BREVO_FROM_EMAIL');
+    $from_name = getEnvVar('BREVO_FROM_NAME');
+    $app_url = getEnvVar('APP_URL');
+    
     // Validate environment variables
-    if (empty($_ENV['BREVO_SMTP_HOST']) || empty($_ENV['BREVO_SMTP_USER'])) {
+    if (empty($smtp_host) || empty($smtp_user) || empty($smtp_pass)) {
         error_log("❌ Cannot send email: Missing SMTP configuration");
+        error_log("SMTP Host: " . ($smtp_host ?: 'MISSING'));
+        error_log("SMTP User: " . ($smtp_user ?: 'MISSING'));
+        error_log("SMTP Pass: " . ($smtp_pass ? 'SET' : 'MISSING'));
         return false;
     }
     
@@ -66,10 +106,10 @@ function sendVerificationEmail($email, $nama, $verification_token, $role) {
         // SECURE SMTP CONFIGURATION
         // ========================================
         $mail->isSMTP();
-        $mail->Host = $_ENV['BREVO_SMTP_HOST'];
+        $mail->Host = $smtp_host;
         $mail->SMTPAuth = true;
-        $mail->Username = $_ENV['BREVO_SMTP_USER'];
-        $mail->Password = $_ENV['BREVO_SMTP_PASS'];
+        $mail->Username = $smtp_user;
+        $mail->Password = $smtp_pass;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
         
@@ -91,7 +131,7 @@ function sendVerificationEmail($email, $nama, $verification_token, $role) {
         $mail->CharSet = 'UTF-8';
         
         // From & To
-        $mail->setFrom($_ENV['BREVO_FROM_EMAIL'], $_ENV['BREVO_FROM_NAME']);
+        $mail->setFrom($from_email, $from_name);
         $mail->addAddress($email, $nama);
         
         // Content
@@ -99,7 +139,7 @@ function sendVerificationEmail($email, $nama, $verification_token, $role) {
         $mail->Subject = 'Verifikasi Email - Registrasi ' . ucfirst($role) . ' E-Station';
         
         // Build verification link
-        $app_url = rtrim($_ENV['APP_URL'], '/');
+        $app_url = rtrim($app_url, '/');
         $verification_link = "{$app_url}/auth/verify_email.php?token={$verification_token}&role={$role}";
         
         error_log("📧 Preparing email for: {$email} (role: {$role})");

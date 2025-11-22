@@ -24,12 +24,12 @@ if (isset($_GET['delete'])) {
             $stmt = $koneksi->prepare("DELETE FROM kendaraan WHERE id_kendaraan = ?");
             $stmt->execute([$id_kendaraan]);
             
-            set_alert('success', 'Berhasil!', 'Kendaraan berhasil dihapus');
+            set_flash_message('success', 'Berhasil!', 'Kendaraan berhasil dihapus');
         } else {
-            set_alert('danger', 'Gagal!', 'Kendaraan tidak ditemukan');
+            set_flash_message('danger', 'Gagal!', 'Kendaraan tidak ditemukan');
         }
     } catch (PDOException $e) {
-        set_alert('danger', 'Gagal!', 'Gagal menghapus kendaraan: ' . $e->getMessage());
+        set_flash_message('danger', 'Gagal!', 'Gagal menghapus kendaraan: ' . $e->getMessage());
     }
     header('Location: manage_vehicles.php');
     exit;
@@ -47,10 +47,10 @@ if (isset($_GET['set_active'])) {
             // Simpan ID kendaraan aktif di session
             $_SESSION['kendaraan_aktif'] = $id_kendaraan;
             
-            set_alert('success', 'Berhasil!', 'Kendaraan aktif: ' . $kendaraan['merk'] . ' ' . $kendaraan['model']);
+            set_flash_message('success', 'Berhasil!', 'Kendaraan aktif: ' . $kendaraan['merk'] . ' ' . $kendaraan['model']);
         }
     } catch (PDOException $e) {
-        set_alert('danger', 'Gagal!', 'Gagal mengubah status kendaraan');
+        set_flash_message('danger', 'Gagal!', 'Gagal mengubah status kendaraan');
     }
     header('Location: manage_vehicles.php');
     exit;

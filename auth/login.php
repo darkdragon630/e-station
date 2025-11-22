@@ -35,14 +35,14 @@ if (isset($_SESSION['user_id'], $_SESSION['role'])) {
   <title>E-Station | Login</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/alert.css">
-  <link rel="icon" type="image/png" href="../images/Logo_1.jpeg">
+  <link rel="icon" type="image/png" href="../images/Logo_1.png">
 </head>
 <body>
   <!-- Loading screen -->
   <div id="loading-screen">
     <div class="loader">
       <div class="electric-circle"></div>  
-      <img src="../images/Logo_1.jpeg" alt="Logo E-Station">
+      <img src="../images/Logo_1.png" alt="Logo E-Station">
       <h2>E-STATION</h2>
     </div>
   </div>

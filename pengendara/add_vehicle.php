@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ");
             $stmt->execute([$id_pengendara, $merk, $model, $no_plat, $tahun]);
             
-            set_alert('success', 'Berhasil!', 'Kendaraan berhasil ditambahkan');
+            set_flash_message('success', 'Berhasil!', 'Kendaraan berhasil ditambahkan');
             header('Location: manage_vehicles.php');
             exit;
         } catch (PDOException $e) {
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Simpan error ke session
     if (!empty($errors)) {
-        set_alert('danger', 'Gagal!', implode('<br>', $errors));
+        set_error_handler('danger', 'Gagal!', implode('<br>', $errors));
     }
 }
 ?>
