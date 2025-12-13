@@ -522,7 +522,7 @@ h5, h6 { font-weight: 600; color: #f1f5f9; }
                     </div>
                 </div>
                 ${warn}
-                <a href="station_detail.php?id=${nearest.id_stasiun}" class="btn btn-light mt-3 fw-bold w-100" style="border-radius:12px;padding:12px 24px;background:white;color:#2563eb">
+                <a href="station_list.php?id=${nearest.id_stasiun}" class="btn btn-light mt-3 fw-bold w-100" style="border-radius:12px;padding:12px 24px;background:white;color:#2563eb">
                     <i class="fas fa-info-circle"></i> Detail Lengkap
                 </a>
             `;
