@@ -395,7 +395,7 @@ body.light h2 {
     <!-- MOBILE HEADER -->
     <div class="mobile-header d-md-none">
         <div class="header-top">
-            <a href="<?php echo $detail ? 'station_detail.php' : 'dashboard.php'; ?>" style="color: #60a5fa; text-decoration: none; font-size: 1.5rem;">
+            <a href="<?php echo $detail ? 'station_list.php' : 'dashboard.php'; ?>" style="color: #60a5fa; text-decoration: none; font-size: 1.5rem;">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <div style="font-size: 1.1rem; font-weight: 700; color: #fff;">
