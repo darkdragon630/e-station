@@ -121,6 +121,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../css/alert.css">
     <link rel="icon" type="image/png" href="../images/Logo_1.png">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
         .back-link {
             display: inline-flex;
             align-items: center;
@@ -128,42 +157,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: var(--primary-color);
             text-decoration: none;
             margin-bottom: 1rem;
-            font-size: 0.95rem;
+            font-size: clamp(0.813rem, 2vw, 0.95rem);
             transition: all 0.3s ease;
         }
+
         .back-link:hover {
             gap: 0.8rem;
+            transform: translateX(-4px);
         }
-        .password-requirements {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-        }
-        .password-requirements ul {
-            margin: 0.5rem 0 0 0;
-            padding-left: 1.2rem;
-        }
-        .password-requirements li {
-            margin-bottom: 0.3rem;
-        }
-        .requirement-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+
+        .title {
+            font-size: clamp(1.5rem, 4vw, 2rem);
             margin-bottom: 0.5rem;
+            text-align: center;
         }
-        .requirement-item.valid {
-            color: #4CAF50;
+
+        .subtitle {
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 1.5rem;
         }
-        .requirement-item.invalid {
-            color: #999;
+
+        .illustration {
+            text-align: center;
+            margin: 1.5rem 0;
         }
+
+        .illustration img {
+            max-width: min(120px, 30vw);
+            height: auto;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
         .password-toggle {
             position: relative;
+            margin-bottom: 0.75rem;
         }
+
+        .password-toggle input {
+            padding-right: 45px;
+        }
+
         .password-toggle button {
             position: absolute;
             right: 10px;
@@ -172,13 +228,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 1.2rem;
-            padding: 5px;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            padding: 8px;
             color: var(--text-color);
+            transition: opacity 0.3s ease;
         }
-        .password-toggle input {
-            padding-right: 40px;
+
+        .password-toggle button:hover {
+            opacity: 0.7;
         }
+
         .password-strength {
             height: 5px;
             background: #e0e0e0;
@@ -186,45 +245,260 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin: 0.5rem 0;
             overflow: hidden;
         }
+
         .password-strength-bar {
             height: 100%;
             width: 0%;
             transition: all 0.3s ease;
             border-radius: 3px;
         }
+
         .strength-weak { width: 33%; background: #f44336; }
         .strength-medium { width: 66%; background: #ff9800; }
         .strength-strong { width: 100%; background: #4CAF50; }
-        
-        /* Responsive Design */
+
+        #strengthText {
+            font-size: clamp(0.813rem, 2vw, 0.9rem);
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .valid-feedback, .invalid-feedback {
+            font-size: clamp(0.813rem, 2vw, 0.9rem);
+            display: block;
+            margin-top: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.875rem;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .password-requirements {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            font-size: clamp(0.813rem, 2vw, 0.9rem);
+        }
+
+        .password-requirements strong {
+            display: block;
+            margin-bottom: 0.75rem;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: clamp(0.813rem, 2vw, 0.9rem);
+            line-height: 1.5;
+        }
+
+        .requirement-item span {
+            flex-shrink: 0;
+            font-size: clamp(0.875rem, 2.5vw, 1rem);
+        }
+
+        .requirement-item.valid {
+            color: #4CAF50;
+        }
+
+        .requirement-item.invalid {
+            color: #999;
+        }
+
+        .register {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .register p {
+            font-size: clamp(0.813rem, 2vw, 0.9rem);
+            margin: 0.5rem 0;
+        }
+
+        .register a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive breakpoints */
         @media (max-width: 768px) {
             .container {
-                padding: 1rem;
+                padding: 1rem 0.75rem;
             }
+
             .login-card {
                 padding: 1.5rem;
-                margin: 1rem auto;
+                border-radius: 12px;
             }
-            .illustration img {
-                max-width: 100px !important;
+
+            .login-form input {
+                padding: 0.75rem;
             }
-            .title {
-                font-size: 1.5rem;
+
+            .password-toggle button {
+                padding: 6px;
             }
-            .subtitle {
-                font-size: 0.9rem;
+
+            .btn-login {
+                padding: 0.75rem;
             }
+
             .password-requirements {
-                font-size: 0.85rem;
+                padding: 0.875rem;
+            }
+
+            .requirement-item {
+                margin-bottom: 0.4rem;
             }
         }
-        
+
         @media (max-width: 480px) {
+            .container {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .login-card {
+                padding: 1.25rem;
+                border-radius: 10px;
+            }
+
+            .back-link {
+                margin-bottom: 0.75rem;
+            }
+
+            .title {
+                margin-bottom: 0.375rem;
+            }
+
+            .subtitle {
+                margin-bottom: 1rem;
+            }
+
+            .illustration {
+                margin: 1rem 0;
+            }
+
+            .login-form label {
+                margin-bottom: 0.375rem;
+            }
+
+            .login-form input {
+                padding: 0.688rem 0.875rem;
+                border-radius: 6px;
+            }
+
+            .password-toggle {
+                margin-bottom: 0.625rem;
+            }
+
+            .password-toggle input {
+                padding-right: 40px;
+            }
+
+            .password-toggle button {
+                right: 8px;
+                padding: 5px;
+            }
+
+            .password-strength {
+                height: 4px;
+                margin: 0.375rem 0;
+            }
+
+            .valid-feedback, .invalid-feedback {
+                margin-top: 0.375rem;
+                margin-bottom: 0.625rem;
+            }
+
+            .btn-login {
+                padding: 0.688rem;
+                border-radius: 6px;
+                margin-top: 0.75rem;
+            }
+
+            .password-requirements {
+                padding: 0.75rem;
+                margin-top: 1.25rem;
+                border-radius: 8px;
+            }
+
+            .password-requirements strong {
+                margin-bottom: 0.5rem;
+            }
+
+            .requirement-item {
+                gap: 0.375rem;
+                margin-bottom: 0.375rem;
+            }
+
+            .register {
+                margin-top: 1.25rem;
+            }
+        }
+
+        @media (max-width: 360px) {
             .login-card {
                 padding: 1rem;
             }
+
             .password-requirements {
-                padding: 0.75rem;
+                padding: 0.625rem;
+            }
+
+            .requirement-item {
+                gap: 0.3rem;
+            }
+        }
+
+        /* Landscape mobile fix */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .container {
+                padding: 1rem 0.5rem;
+            }
+
+            .login-card {
+                padding: 1rem;
+            }
+
+            .illustration {
+                margin: 0.5rem 0;
+            }
+
+            .illustration img {
+                max-width: 70px;
+            }
+
+            .password-requirements {
+                margin-top: 1rem;
+            }
+
+            .register {
+                margin-top: 1rem;
             }
         }
     </style>
@@ -255,7 +529,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="subtitle">Masukkan password baru yang kuat dan aman</p>
 
             <div class="illustration">
-                <img src="../images/Logo_1.jpeg" alt="Logo E-Station" style="max-width: 120px;">
+                <img src="../images/Logo_1.jpeg" alt="Logo E-Station">
             </div>
             
             <?php tampilkan_alert(); ?>
@@ -297,10 +571,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         👁️
                     </button>
                 </div>
-                <small id="validFeedback" class="valid-feedback" style="display: none; color: #10b981; margin-top: 6px; font-weight: 600;">
+                <small id="validFeedback" class="valid-feedback" style="display: none; color: #10b981; font-weight: 600;">
                     ✅ Password cocok!
                 </small>
-                <small id="invalidFeedback" class="invalid-feedback" style="display: none; color: #ef4444; margin-top: 6px;">
+                <small id="invalidFeedback" class="invalid-feedback" style="display: none; color: #ef4444;">
                     ❌ Password tidak cocok!
                 </small>
 
@@ -309,26 +583,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="password-requirements">
                 <strong>🔒 Syarat Password:</strong>
-                <div style="margin-top: 0.75rem;">
+                <div>
                     <div class="requirement-item" id="req-length">
-                        <span>❌</span> Minimal 8 karakter
+                        <span>❌</span> <span>Minimal 8 karakter</span>
                     </div>
                     <div class="requirement-item" id="req-lowercase">
-                        <span>❌</span> Huruf kecil (a-z)
+                        <span>❌</span> <span>Huruf kecil (a-z)</span>
                     </div>
                     <div class="requirement-item" id="req-uppercase">
-                        <span>❌</span> Huruf besar (A-Z)
+                        <span>❌</span> <span>Huruf besar (A-Z)</span>
                     </div>
                     <div class="requirement-item" id="req-number">
-                        <span>❌</span> Angka (0-9)
+                        <span>❌</span> <span>Angka (0-9)</span>
                     </div>
                     <div class="requirement-item" id="req-symbol">
-                        <span>❌</span> Simbol (!@#$%^&*)
+                        <span>❌</span> <span>Simbol (!@#$%^&*)</span>
                     </div>
                 </div>
             </div>
 
-            <div class="register" style="margin-top: 1.5rem;">
+            <div class="register">
                 <p>Ingat password? <a href="login.php">Login di sini</a></p>
             </div>
         </div>

@@ -101,24 +101,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 
                 if ($email_sent) {
-                    // Email berhasil dikirim
                     $_SESSION['alert'] = [
                         'type' => 'success',
                         'message' => 'Link reset password telah dikirim ke email Anda! Silakan cek inbox atau folder spam.'
                     ];
-                    // Juga tampilkan manual link sebagai backup
-                    $_SESSION['reset_manual_link'] = true;
                 } else {
-                    // Email gagal - tampilkan manual link
-                    $_SESSION['reset_manual_link'] = true;
                     $_SESSION['alert'] = [
-                        'type' => 'warning',
-                        'message' => 'Email gagal dikirim, tapi Anda masih bisa reset password menggunakan link di bawah.'
+                        'type' => 'error',
+                        'message' => 'Gagal mengirim email. Silakan coba lagi atau hubungi administrator.'
                     ];
                 }
-                
-                // JANGAN redirect otomatis, biarkan user di halaman ini
-                // User bisa klik link manual atau tunggu email
             } else {
                 // Untuk keamanan, tampilkan pesan yang sama
                 $_SESSION['alert'] = [
@@ -150,6 +142,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../css/alert.css">
     <link rel="icon" type="image/png" href="../images/Logo_1.png">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
         .back-link {
             display: inline-flex;
             align-items: center;
@@ -160,52 +181,234 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 0.95rem;
             transition: all 0.3s ease;
         }
+
         .back-link:hover {
             gap: 0.8rem;
+            transform: translateX(-4px);
         }
+
+        .title {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .illustration {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .illustration img {
+            max-width: min(120px, 30vw);
+            height: auto;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.875rem;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
         .info-box {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
             border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 12px;
             padding: 1rem;
             margin-top: 1.5rem;
-            font-size: 0.9rem;
+            font-size: clamp(0.813rem, 2vw, 0.9rem);
         }
+
         .info-box ul {
             margin: 0.5rem 0 0 0;
             padding-left: 1.2rem;
         }
+
         .info-box li {
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
         }
-        
-        /* Responsive Design */
+
+        .register {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .register p {
+            font-size: clamp(0.813rem, 2vw, 0.9rem);
+            margin: 0.5rem 0;
+        }
+
+        .register a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive breakpoints */
         @media (max-width: 768px) {
             .container {
-                padding: 1rem;
+                padding: 1rem 0.75rem;
             }
+
             .login-card {
                 padding: 1.5rem;
-                margin: 1rem auto;
+                border-radius: 12px;
             }
-            .illustration img {
-                max-width: 100px !important;
+
+            .back-link {
+                font-size: 0.875rem;
             }
-            .title {
-                font-size: 1.5rem;
+
+            .login-form input {
+                padding: 0.75rem;
             }
-            .subtitle {
-                font-size: 0.9rem;
+
+            .btn-login {
+                padding: 0.75rem;
+            }
+
+            .info-box {
+                padding: 0.875rem;
+            }
+
+            .info-box li {
+                margin-bottom: 0.4rem;
             }
         }
-        
+
         @media (max-width: 480px) {
+            .container {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .login-card {
+                padding: 1.25rem;
+                border-radius: 10px;
+            }
+
+            .back-link {
+                font-size: 0.813rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .title {
+                margin-bottom: 0.375rem;
+            }
+
+            .subtitle {
+                margin-bottom: 1rem;
+            }
+
+            .illustration {
+                margin: 1rem 0;
+            }
+
+            .login-form input {
+                padding: 0.688rem 0.875rem;
+                margin-bottom: 1rem;
+                border-radius: 6px;
+            }
+
+            .btn-login {
+                padding: 0.688rem;
+                border-radius: 6px;
+            }
+
+            .info-box {
+                padding: 0.75rem;
+                margin-top: 1.25rem;
+                border-radius: 8px;
+            }
+
+            .info-box ul {
+                padding-left: 1rem;
+            }
+
+            .register {
+                margin-top: 1.25rem;
+            }
+        }
+
+        @media (max-width: 360px) {
             .login-card {
                 padding: 1rem;
             }
+
             .info-box {
-                font-size: 0.85rem;
-                padding: 0.75rem;
+                padding: 0.625rem;
+            }
+        }
+
+        /* Landscape mobile fix */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .container {
+                padding: 1rem 0.5rem;
+            }
+
+            .login-card {
+                padding: 1rem;
+            }
+
+            .illustration {
+                margin: 0.75rem 0;
+            }
+
+            .illustration img {
+                max-width: 80px;
+            }
+
+            .info-box {
+                margin-top: 1rem;
+            }
+
+            .register {
+                margin-top: 1rem;
             }
         }
     </style>
@@ -236,34 +439,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="subtitle">Masukkan email Anda untuk reset password</p>
 
             <div class="illustration">
-                <img src="../images/Logo_1.jpeg" alt="Logo E-Station" style="max-width: 120px;">
+                <img src="../images/Logo_1.jpeg" alt="Logo E-Station">
             </div>
             
             <?php tampilkan_alert(); ?>
-            
-            <?php if (isset($_SESSION['reset_manual_link']) && $_SESSION['reset_manual_link']): ?>
-            <!-- Manual Reset Link Box -->
-            <div class="manual-reset-box" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)); border: 2px solid rgba(102, 126, 234, 0.4); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
-                <h6 style="margin: 0 0 1rem 0; color: var(--text-color); font-size: 1rem;">
-                    <i style="color: #667eea;">🔗</i> Link Reset Password
-                </h6>
-                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
-                    Klik tombol di bawah untuk reset password Anda:
-                </p>
-                <a href="reset_password.php?token=<?= $_SESSION['reset_token'] ?? '' ?>" 
-                   class="btn-login" 
-                   style="display: block; text-align: center; margin-bottom: 1rem;">
-                    🔑 Reset Password Sekarang
-                </a>
-                <div style="background: rgba(255,255,255,0.5); padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; word-break: break-all; font-family: monospace; color: #666;">
-                    <?= $_SERVER['REQUEST_SCHEME'] ?>://<?= $_SERVER['HTTP_HOST'] ?><?= dirname($_SERVER['PHP_SELF']) ?>/reset_password.php?token=<?= $_SESSION['reset_token'] ?? '' ?>
-                </div>
-                <p style="font-size: 0.85rem; color: #ff9800; margin: 1rem 0 0 0;">
-                    ⏰ Link berlaku selama 1 jam
-                </p>
-            </div>
-            <?php unset($_SESSION['reset_manual_link']); ?>
-            <?php endif; ?>
             
             <form action="" method="POST" class="login-form">
                 <label for="email">Email Terdaftar</label>
@@ -286,11 +465,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <li>Link berlaku selama 1 jam</li>
                     <li>Jika tidak menerima email, cek folder spam</li>
                     <li>Pastikan email yang dimasukkan sudah terdaftar</li>
-                    <li>Jika email tidak masuk, gunakan link manual yang muncul di halaman ini</li>
                 </ul>
             </div>
 
-            <div class="register" style="margin-top: 1.5rem;">
+            <div class="register">
                 <p>Ingat password? <a href="login.php">Login di sini</a></p>
                 <p>Belum punya akun? <a href="auth.php">Daftar di sini</a></p>
             </div>
